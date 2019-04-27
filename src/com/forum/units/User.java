@@ -1,21 +1,21 @@
 package com.forum.units;
 
-public class User extends TimeStamp {
+public class User extends AbstractEntity {
 	
+	//unique name of user
 	private String username;
+	//password needed for login
 	private String password;
+	//unique emailid for user
 	private String email;
+	//role of user in discussion forum
 	private UserRole userRole;
-	private long id;
+	//id of the last registered user
 	private static Long lastEntry = 0L;
 	
-	public Long getId() {
-		return id;
-	}
-	
-	public void setId() {
+	public void autoGenerateId() {
 		lastEntry = lastEntry + 1L;
-		this.id = lastEntry;
+		super.setId(lastEntry);
 	}
 	
 	public String getUsername() {

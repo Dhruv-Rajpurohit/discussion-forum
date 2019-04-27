@@ -1,19 +1,18 @@
 package com.forum.units;
 
-public class Upvote extends TimeStamp {
+public class Upvote extends AbstractEntity {
+	//question for which user has upvoted
 	private Question question;
+	//reply for which user has upvoted
 	private Reply reply;
+	//user who has upvoted for either of question xor answer
 	private User user;
-	private long id;
+	//id for the last upvote on discussion forum
 	private static Long lastEntry = 0L;
 	
-	public Long getId() {
-		return id;
-	}
-	
-	public void setId() {
+	public void autoGenerateId() {
 		lastEntry = lastEntry + 1L;
-		this.id = lastEntry;
+		super.setId(lastEntry);
 	}
 	
 	public Question getQuestion() {

@@ -1,33 +1,30 @@
 package com.forum.main;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
+import com.forum.units.Question;
 import com.forum.units.User;
 import com.forum.units.UserRole;
+import com.forum.util.Utility;
 
 import discusion.forum.activiy.UserActivity;
-import discussion.forum.units.service.UserService;
 
-public class UserInterface {
-	public static User user;
-	public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	public static UserActivity userActivity;
+public class DiscussionForum {
 	
 	public static void main(String args[]) throws IOException {
-		UserService.createUser("admin", "admin", "admin", UserRole.ADMIN);
-		userActivity = new UserActivity();
+		User user;
+		UserActivity userActivity = new UserActivity();
+		userActivity.userService.createUser("admin", "admin", "admin", UserRole.ADMIN);
 		while (true) {
-			userActivity.loginActivity();
+			user = userActivity.loginActivity();
 			if (user == null)
 				continue;
 			System.out.println("Welcome " + user.getUsername());
-			menu();
+			menu(user, userActivity);
 		}
 	}
 	
-	public static void menu() throws NumberFormatException, IOException {
+	public static void menu(User user, UserActivity userActivity) throws NumberFormatException, IOException {
 		while (true) {
 			int menuIndex = 0;
 			if (user.getUserRole() == UserRole.ADMIN) {
@@ -37,14 +34,14 @@ public class UserInterface {
 			System.out.println(++menuIndex + " See all questions");
 			System.out.println(++menuIndex + " Log Out");
 			System.out.println("\n Enter your choice");
-			if (!classifyMenuChoice(Integer.parseInt(br.readLine())))
+			if (!classifyMenuChoice(Integer.parseInt(Utility.inputFromUser()), userActivity, user))
 				break;
 			
 		}
 	}
 	
-	public static boolean classifyMenuChoice(int choice) throws IOException {
-		if (UserRole.ADMIN != UserInterface.user.getUserRole()) {
+	public static boolean classifyMenuChoice(int choice, UserActivity userActivity, User user) throws IOException {
+		if (UserRole.ADMIN != user.getUserRole()) {
 			choice++;
 		}
 		while (true) {
@@ -53,16 +50,18 @@ public class UserInterface {
 					userActivity.createNewUser();
 					return true;
 				case 2:
-					userActivity.postNewQuestion();
+					userActivity.postNewQuestion(user);
 					return true;
 				case 3:
-					userActivity.seeAllQuestions();
+					userActivity.seeAllQuestions(userActivity, user);
 					return true;
 				case 4:
 					return false;
 				default:
 					System.out.println("Wrong choice. Try again");
 			}
+			System.out.println("\n Enter your choice");
+			choice = Integer.parseInt(Utility.inputFromUser());
 		}
 	}
 	
@@ -73,7 +72,7 @@ public class UserInterface {
 		System.out.println(++menuIndex + UserRole.USER.toString());
 		while (true) {
 			System.out.println("\n Enter your choice");
-			int choice = Integer.parseInt(br.readLine());
+			int choice = Integer.parseInt(Utility.inputFromUser());
 			switch (choice) {
 				case 1:
 					return UserRole.ADMIN;
@@ -87,7 +86,7 @@ public class UserInterface {
 		}
 	}
 	
-	public static void questionMenu() throws NumberFormatException, IOException {
+	public static void questionMenu(UserActivity userActivity, User user) throws NumberFormatException, IOException {
 		while (true) {
 			int menuIndex = 0;
 			System.out.println(++menuIndex + " Upvote a question");
@@ -96,56 +95,58 @@ public class UserInterface {
 			System.out.println(++menuIndex + " Delete a question");
 			System.out.println(++menuIndex + " Return to main menu");
 			System.out.println("\n Enter your choice");
-			if (!processQuestionChoice(Integer.parseInt(br.readLine()))) {
+			if (!processQuestionChoice(Integer.parseInt(Utility.inputFromUser()), userActivity, user)) {
 				break;
 			}
 		}
 	}
 	
-	public static boolean processQuestionChoice(int choice) throws NumberFormatException, IOException {
+	public static boolean processQuestionChoice(int choice, UserActivity userActivity, User user) throws NumberFormatException, IOException {
 		while (true) {
 			switch (choice) {
 				case 1:
-					userActivity.upvoteQuestion();
+					userActivity.upvoteQuestion(user);
 					return true;
 				case 2:
-					userActivity.replyToQuestion();
+					userActivity.replyToQuestion(user);
 					return true;
 				case 3:
-					userActivity.seeAllReplies();
+					userActivity.seeAllReplies(userActivity, user);
 					return true;
 				case 4:
-					userActivity.deleteQuestion();
+					userActivity.deleteQuestion(userActivity, user);
 					return true;
 				case 5:
 					return false;
 				default:
 					System.out.println("Wrong choice. Try again");
 			}
+			System.out.println("Enter your choice");
+			choice = Integer.parseInt(Utility.inputFromUser());
 		}
 	}
 	
-	public static void replyMenu() throws NumberFormatException, IOException {
+	public static void replyMenu(UserActivity userActivity, User user, Question question) throws NumberFormatException, IOException {
 		while (true) {
 			int menuIndex = 0;
 			System.out.println(++menuIndex + " Upvote a reply");
 			System.out.println(++menuIndex + " Delete a reply");
 			System.out.println(++menuIndex + " Return to question menu");
 			System.out.println("\n Enter your choice");
-			if (!processReplyChoice(Integer.parseInt(br.readLine()))) {
+			if (!processReplyChoice(Integer.parseInt(Utility.inputFromUser()), userActivity, user, question)) {
 				break;
 			}
 		}
 	}
 	
-	public static boolean processReplyChoice(int choice) throws NumberFormatException, IOException {
+	public static boolean processReplyChoice(int choice, UserActivity userActivity, User user, Question question) throws NumberFormatException, IOException {
 		while (true) {
 			switch (choice) {
 				case 1:
-					userActivity.upvoteReply();
+					userActivity.upvoteReply(user);
 					return true;
 				case 2:
-					userActivity.deleteReply();
+					userActivity.deleteReply(question, userActivity, user);
 					return true;
 				case 3:
 					return false;
