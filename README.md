@@ -17,4 +17,6 @@ Our version of the Discussion Forum will be non-graphical and entirely text-base
 -> Delete a question and its replies
 
 If all the code is properly integrated you will be able to see below output!
+
+
 <img src="DiscForum.PNG">
